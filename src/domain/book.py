@@ -4,8 +4,6 @@ import uuid
 
 import textwrap
 
-
-
 @dataclass
 class Book:
     title: str

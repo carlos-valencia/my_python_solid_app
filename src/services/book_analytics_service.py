@@ -1,4 +1,3 @@
-from tabnanny import check
 import numpy as np
 from src.domain.book import Book
 
@@ -47,7 +46,7 @@ class BookAnalyticsService:
             book.book_id: float(score) 
             for book, score in zip (books, scores)
         }
-    
+
     def get_medians_by_genre(self, books: list[Book]) -> dict[str, float]:
 
         genres = set(book.genre for book in books)
@@ -72,7 +71,5 @@ class BookAnalyticsService:
                 checkouts_by_genre[book.genre] += 1
             else:
                 checkouts_by_genre[book.genre] = 1
-    
-        return max(checkouts_by_genre.keys(), key = lambda genre: checkouts_by_genre[genre])
-        
 
+        return max(checkouts_by_genre.keys(), key = lambda genre: checkouts_by_genre[genre])

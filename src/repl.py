@@ -5,7 +5,6 @@ from src.services import BookService
 from src.services.book_analytics_service import BookAnalyticsService
 import requests
 
-
 class BookREPL:
     def __init__(self, book_svc, book_analytic_svc):
         self.running = True
@@ -66,23 +65,27 @@ class BookREPL:
         print(medians)
 
     def print_main_menu(self):
-        print("Available Commands\n"
-              "[1] Get All Records\n"
-              "[2] Add Book\n"
-              "[3] Remove Book\n"
-              "[4] Update Book\n"
-              "[5] Find Book By Name\n"
-              "[6] Analytics\n"
-              "[0] EXIT\n")
+        print(
+            "Available Commands\n"
+            "[1] Get All Records\n"
+            "[2] Add Book\n"
+            "[3] Remove Book\n"
+            "[4] Update Book\n"
+            "[5] Find Book By Name\n"
+            "[6] Analytics\n"
+            "[0] EXIT\n"
+        )
 
     def print_analytics_menu(self):
-        print("Available Analytics\n"
-              "[1] Average Price\n"
-              "[2] Top Books\n"
-              "[3] Value Scores\n"
-              "[4] Average Price by Genre\n"
-              "[5] Most Popular Genre of the Year\n"
-              "[0] MAIN MENU\n")
+        print(
+            "Available Analytics\n"
+            "[1] Average Price\n"
+            "[2] Top Books\n"
+            "[3] Value Scores\n"
+            "[4] Average Price by Genre\n"
+            "[5] Most Popular Genre of the Year\n"
+            "[0] MAIN MENU\n"
+        )
 
     def most_popular_genre(self):
         books = self.book_service.get_all_books()
@@ -93,7 +96,6 @@ class BookREPL:
 
     def remove_book(self):
         query = input("Please enter book name: ")
-
 
     def get_average_price(self):
         books = self.book_service.get_all_books()
@@ -109,8 +111,6 @@ class BookREPL:
         books = self.book_service.get_all_books()
         value_scores = self.book_analytics_service.value_scores(books)
         print(value_scores)
-
-    
 
     def get_joke(self):
         try:
@@ -134,7 +134,7 @@ class BookREPL:
             print("Enter book details")
             title = input("Title: ")
             author = input("Author: ")
-            book = Book(title = title, author = author)
+            book = Book(title=title, author=author)
             new_book_id = self.book_service.add_book(book)
             print(new_book_id)
         except Exception as e:
@@ -145,6 +145,7 @@ class BookREPL:
         books = self.book_service.find_book_by_name(query)
         print(books)
 
+
 if __name__ == "__main__":
     generate_books_json()
     repo = BookRepository("books.json")
@@ -152,4 +153,3 @@ if __name__ == "__main__":
     book_analytics_service = BookAnalyticsService()
     repl = BookREPL(book_service, book_analytics_service)
     repl.start()
-    
