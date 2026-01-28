@@ -13,13 +13,13 @@ class BookREPL:
         self.book_analytics_service = book_analytic_svc
 
     def start(self):
-        print("Welcome to the Book app! Type 'help' for a list of commands.")
+        print("Welcome to the Book app!")
         while self.running:
+            self.print_main_menu()
             cmd = input(">>>").strip()
             self.handle_command(cmd)
 
     def handle_command(self, cmd):
-        self.print_main_menu()
         if cmd == "0":
             self.running = False
             print("Goodbye")
@@ -55,6 +55,8 @@ class BookREPL:
                 self.get_value_scores()
             elif cmd == "4":
                 self.get_median_price_by_genre()
+            elif cmd == "5":
+                self.most_popular_genre()
             else:
                 print("Please select a valid analytics command")
 
@@ -65,13 +67,13 @@ class BookREPL:
 
     def print_main_menu(self):
         print("Available Commands\n"
-              "[1] Get All Records"
-              "[2] Add Book"
-              "[3] Remove Book"
-              "[4] Update Book"
-              "[5] Find Book By Name"
-              "[6] Analytics"
-              "[0] EXIT")
+              "[1] Get All Records\n"
+              "[2] Add Book\n"
+              "[3] Remove Book\n"
+              "[4] Update Book\n"
+              "[5] Find Book By Name\n"
+              "[6] Analytics\n"
+              "[0] EXIT\n")
 
     def print_analytics_menu(self):
         print("Available Analytics\n"
@@ -79,11 +81,19 @@ class BookREPL:
               "[2] Top Books\n"
               "[3] Value Scores\n"
               "[4] Average Price by Genre\n"
-              "[0] MAIN MENU")
+              "[5] Most Popular Genre of the Year\n"
+              "[0] MAIN MENU\n")
 
+    def most_popular_genre(self):
+        books = self.book_service.get_all_books()
+        print(self.book_analytics_service.most_popular_genre(books))
 
     def update_book(self):
         pass
+
+    def remove_book(self):
+        query = input("Please enter book name: ")
+
 
     def get_average_price(self):
         books = self.book_service.get_all_books()
@@ -100,10 +110,7 @@ class BookREPL:
         value_scores = self.book_analytics_service.value_scores(books)
         print(value_scores)
 
-    def remove_book(self):
-        query = input("Please enter book name: ")
-        
-        pass
+    
 
     def get_joke(self):
         try:

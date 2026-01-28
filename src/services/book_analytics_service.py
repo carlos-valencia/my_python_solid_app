@@ -1,3 +1,4 @@
+from tabnanny import check
 import numpy as np
 from src.domain.book import Book
 
@@ -13,7 +14,8 @@ class BookAnalyticsService:
         prices = np.array([b.price_usd for b in books], dtype="float")
         return float(prices.mean())
 
-    def top_rated(self, books: list[Book], min_ratings: int = 1000, limit: int = 10) -> list[Book]:
+    # changed min_ratings default to 500 because max generated value is 1000
+    def top_rated(self, books: list[Book], min_ratings: int = 500, limit: int = 10) -> list[Book]:
         ratings = np.array([b.average_rating for b in books])
         counts = np.array([b.ratings_count for b in books])
 
@@ -57,4 +59,20 @@ class BookAnalyticsService:
             medians_by_genre[genre] = mean
 
         return medians_by_genre
+
+    def most_popular_genre(self, books: list[Book]) -> str:
+        checkouts_by_genre: dict[str, int] = {}
+        checkouts = np.array([b.last_checkout for b in books])
+
+        mask = np.char.startswith(checkouts, "2026")
+        filtered_books = np.array(books)[mask]
+
+        for book in filtered_books:
+            if book.genre in checkouts_by_genre:
+                checkouts_by_genre[book.genre] += 1
+            else:
+                checkouts_by_genre[book.genre] = 1
+    
+        return max(checkouts_by_genre.keys(), key = lambda genre: checkouts_by_genre[genre])
+        
 
