@@ -67,7 +67,7 @@ class BookREPL:
     def print_main_menu(self):
         print(
             "Available Commands\n"
-            "[1] Get All Records\n"
+            "[1] Print All Records\n"
             "[2] Add Book\n"
             "[3] Remove Book\n"
             "[4] Update Book\n"
@@ -96,6 +96,42 @@ class BookREPL:
 
     def remove_book(self):
         query = input("Please enter book name: ")
+        books = self.book_service.find_book_by_name(query)
+
+        # no such books of that title (list is empty)
+        if not books:
+            print(f"No books found with the title {query}")
+        else:
+            # more than one found, give user chance to choose one (by number)
+            if len(books) > 1:
+                print("Multiple entries found with that name, select one to remove")
+                print(*(f"[{i}] {book.title} - {book.author}"
+                        for i, book in enumerate(books, start=1)), sep="\n")
+                choice = self.get_choice_int(len(books))
+                print(f"{books[choice].title} has been deleted"
+                      if self.book_service.remove_book(books[choice])
+                      else "An unexpected error occurred")
+
+            else:
+                # removes and prints appropriate message
+                print(f"{books[0].title} has been deleted"
+                      if self.book_service.remove_book(books[0])
+                      else "An unexpected error occurred")
+
+
+    def get_choice_int(self, length: int) -> int:
+        while True:
+            try:
+                choice = int(input("Enter selection: "))
+                if choice - 1 < 0 or choice - 1 >= length:
+                    raise IndexError("Index out of bounds.")
+                return choice - 1
+            except TypeError:
+                print("Something went wrong, please try again")
+            except ValueError:
+                print("Invalid input. Please enter a valid number.")
+            except IndexError as ie:
+                print(f"{ie}. Please enter a choice in the range of 1 and {length}")
 
     def get_average_price(self):
         books = self.book_service.get_all_books()
