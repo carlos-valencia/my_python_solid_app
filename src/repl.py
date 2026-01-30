@@ -25,16 +25,18 @@ class BookREPL:
         elif cmd == "1":
             self.get_all_records()
         elif cmd == "2":
-            self.add_book()
-        elif cmd == "3":
-            self.remove_book()
-        elif cmd == "4":
             self.update_book()
+        elif cmd == "3":
+            self.add_book()
+        elif cmd == "4":
+            self.remove_book()
         elif cmd == "5":
-            self.find_book_by_name()
+            self.update_book()
         elif cmd == "6":
-            self.analytics()
+            self.find_book_by_name()
         elif cmd == "7":
+            self.analytics()
+        elif cmd == "8":
             self.get_joke()
         else:
             print("Please use a valid command")
@@ -68,11 +70,13 @@ class BookREPL:
         print(
             "Available Commands\n"
             "[1] Print All Records\n"
-            "[2] Add Book\n"
-            "[3] Remove Book\n"
-            "[4] Update Book\n"
-            "[5] Find Book By Name\n"
-            "[6] Analytics\n"
+            "[2] Check out/Check in Book\n"
+            "[3] Add Book\n"
+            "[4] Remove Book\n"
+            "[5] Update Book\n"
+            "[6] Find Book By Name\n"
+            "[7] Analytics\n"
+            "[8] Get Joke\n"
             "[0] EXIT\n"
         )
 
@@ -92,46 +96,73 @@ class BookREPL:
         print(self.book_analytics_service.most_popular_genre(books))
 
     def update_book(self):
-        pass
+        query = input("Please enter book name: ")
+        book_choice = self.get_book_choice(query)
+        self.print_update_options(book_choice)
+
+    def print_update_options(self, book: Book):
+        print(f"Update options for {book.title} by {book.author}\n"
+              f" [1] Genre: {book.genre}\n"
+              f" [2] Publication Year: {book.publication_year}\n"
+              f" [3] Page Count: {book.page_count}\n"
+              f" [4] Average Rating: {book.average_rating}\n"
+              f" [5] Count of Ratings: {book.ratings_count}\n"
+              f" [6] Price in USD: {book.price_usd}\n"
+              f" [7] Publisher: {book.publisher}\n"
+              f" [8] Language: {book.language}\n"
+              f" [9] Format: {book.format}\n"
+              f"[10] In Print?: {book.in_print}\n"
+              f"[11] Sales in Millions: {book.sales_millions}\n"
+              f"[12] Last Checkout: {book.last_checkout}\n"
+              f"[13] Available?: {book.available}\n"
+              "Please select an option")
+        
+        update_option = self.get_choice_int(13, False)
+
+    def get_book_choice(self, query: str) -> Book:
+        books = self.book_service.find_book_by_name(query)
+
+        # list is empty - no such books of that title
+        if not books:
+            print(f"No books found with the title {query}")
+            return None
+
+        # more than one found, give user chance to choose one (by index)
+        if len(books) > 1:
+            print("Multiple entries found with that name, select one")
+            print(*(f"[{i}] {book.title} - {book.author}"
+                    for i, book in enumerate(books, start=1)), sep="\n")
+            choice = self.get_choice_int(len(books), True)
+            return books[choice]
+
+        # only one in list, returns index 0
+        return books[0]
 
     def remove_book(self):
         query = input("Please enter book name: ")
-        books = self.book_service.find_book_by_name(query)
+        book_choice = self.get_book_choice(query)
 
-        # no such books of that title (list is empty)
-        if not books:
-            print(f"No books found with the title {query}")
-        else:
-            # more than one found, give user chance to choose one (by number)
-            if len(books) > 1:
-                print("Multiple entries found with that name, select one to remove")
-                print(*(f"[{i}] {book.title} - {book.author}"
-                        for i, book in enumerate(books, start=1)), sep="\n")
-                choice = self.get_choice_int(len(books))
-                print(f"{books[choice].title} has been deleted"
-                      if self.book_service.remove_book(books[choice])
-                      else "An unexpected error occurred")
+        if book_choice:
+            print(f"{book_choice.title} has been removed"
+                  if self.book_service.remove_book(book_choice)
+                  else "An unexpected error has occurred")
 
-            else:
-                # removes and prints appropriate message
-                print(f"{books[0].title} has been deleted"
-                      if self.book_service.remove_book(books[0])
-                      else "An unexpected error occurred")
-
-
-    def get_choice_int(self, length: int) -> int:
+    def get_choice_int(self, length: int, adjust: bool) -> int:
         while True:
             try:
                 choice = int(input("Enter selection: "))
                 if choice - 1 < 0 or choice - 1 >= length:
                     raise IndexError("Index out of bounds.")
-                return choice - 1
+                
+                # adjust == True: we adjust the value for list index
+                # adjust == False: we return as is
+                return choice - 1 if adjust else choice
             except TypeError:
-                print("Something went wrong, please try again")
+                print("Something went wrong, please try again.")
             except ValueError:
                 print("Invalid input. Please enter a valid number.")
             except IndexError as ie:
-                print(f"{ie}. Please enter a choice in the range of 1 and {length}")
+                print(f"{ie} Please enter a choice in the range of 1 and {length}")
 
     def get_average_price(self):
         books = self.book_service.get_all_books()

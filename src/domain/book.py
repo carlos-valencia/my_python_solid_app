@@ -2,8 +2,6 @@ from dataclasses import dataclass, field
 from typing import Optional
 import uuid
 
-import textwrap
-
 @dataclass
 class Book:
     title: str
@@ -25,12 +23,12 @@ class Book:
 
     def check_out(self):
         if not self.available:
-            raise Exception("Book is already checked out")        
+            raise RuntimeError("Book is already checked out")        
         self.available = False
 
     def check_in(self):
         if self.available:
-            raise Exception("Book is already available")
+            raise RuntimeError("Book is already available")
         self.available = True
 
     @classmethod
@@ -69,17 +67,15 @@ class Book:
             else "Available"
         )
 
-        return textwrap.dedent(f"""
-                ****** {self.title} by {self.author} ******
-                Genre: {self.genre}
-                Published: {self.publication_year} by {self.publisher}
-                Number of pages: {self.page_count}
-                Format: {self.format}
-                Language: {self.language}
-                Rating: {self.average_rating} out of 5.0 - {self.ratings_count} reviews
-                Sales: {self.sales_millions}M copies
-                Availability: {status}
-                Last Checked out: {self.last_checkout}
-                Price: ${self.price_usd}
-                ~~~~~ Book ID: {self.book_id} ~~~~~
-                """)
+        return (f"****** {self.title} by {self.author} ******\n"
+                f"Genre: {self.genre}\n"
+                f"Published: {self.publication_year} by {self.publisher}\n"
+                f"Number of pages: {self.page_count}\n"
+                f"Format: {self.format}\n"
+                f"Language: {self.language}\n"
+                f"Rating: {self.average_rating} out of 5.0 - {self.ratings_count} reviews\n"
+                f"Sales: {self.sales_millions}M copies\n"
+                f"Availability: {status}\n"
+                f"Last Checked out: {self.last_checkout}\n"
+                f"Price: ${self.price_usd}\n"
+                f"~~~~~ Book ID: {self.book_id} ~~~~~\n")
