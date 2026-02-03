@@ -26,3 +26,8 @@ class BookRead(BookCreate):
 
     class Config:
         from_attributes = True
+        fields = {
+            "book_id": ...,
+            "title": ...,
+            "author": ...,
+        }

@@ -21,3 +21,6 @@ class BookService:
     
     def update_book(self, book: Book) -> bool:
         return self.repo.update_book(book)
+    
+    def add_seed_books(self, books: list[Book]) -> None:
+        self.repo.add_seed_records(books)

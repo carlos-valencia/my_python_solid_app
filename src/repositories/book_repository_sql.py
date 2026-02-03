@@ -38,3 +38,9 @@ class SQLBookRepository(BookRepositoryProtocol):
     def remove_book(self, book: Book) -> bool:
         self.session.delete(book)
         self.session.commit()
+
+    def add_seed_records(self, books: list[Book]) -> None:
+        for book in books:
+            self.session.add(book)
+
+        self.session.commit()
