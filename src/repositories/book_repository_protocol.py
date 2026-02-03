@@ -13,3 +13,9 @@ class BookRepositoryProtocol(Protocol):
 
     def remove_book(self, book: Book) -> bool:
         ...
+
+    def check_out_book(self, book_id: str) -> Book:
+        ...
+
+    def check_in_book(self, book_id: str) -> Book:
+        ...
