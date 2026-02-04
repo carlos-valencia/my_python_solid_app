@@ -35,3 +35,11 @@ class BookRepository(BookRepositoryProtocol):
             json.dump([item.to_dict() for item in books], f, indent=2)
 
         return True
+
+    def update_book(self, book: Book, updates: dict[str: int]) -> bool:
+        books = self.get_all_books()
+        for field, value in updates.items():
+            setattr(book, field, value)
+
+        with open(self.filepath, "w", encoding="utf-8") as f:
+            json.dump([item.to_dict() for item in books], f, indent=2)

@@ -98,26 +98,21 @@ class BookREPL:
     def update_book(self):
         query = input("Please enter book name: ")
         book_choice = self.get_book_choice(query)
-        self.print_update_options(book_choice)
-
-    def print_update_options(self, book: Book):
-        print(f"Update options for {book.title} by {book.author}\n"
-              f" [1] Genre: {book.genre}\n"
-              f" [2] Publication Year: {book.publication_year}\n"
-              f" [3] Page Count: {book.page_count}\n"
-              f" [4] Average Rating: {book.average_rating}\n"
-              f" [5] Count of Ratings: {book.ratings_count}\n"
-              f" [6] Price in USD: {book.price_usd}\n"
-              f" [7] Publisher: {book.publisher}\n"
-              f" [8] Language: {book.language}\n"
-              f" [9] Format: {book.format}\n"
-              f"[10] In Print?: {book.in_print}\n"
-              f"[11] Sales in Millions: {book.sales_millions}\n"
-              f"[12] Last Checkout: {book.last_checkout}\n"
-              f"[13] Available?: {book.available}\n"
-              "Please select an option")
         
-        update_option = self.get_choice_int(13, False)
+        updates = {}
+
+        new_title = input("Enter new book title: ")
+        new_author = input("Enter new author: ")
+
+        if new_title:
+            updates["title"] = new_title
+
+        if new_author:
+            updates["author"] = new_author
+
+        print("Book was successfully updated"
+              if self.book_service.update_book(book_choice, updates)
+              else "Something went wrong, book was not updated")
 
     def get_book_choice(self, query: str) -> Book:
         books = self.book_service.find_book_by_name(query)

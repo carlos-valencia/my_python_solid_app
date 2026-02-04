@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import numpy as np
 from src.domain.book import Book
 
-def generate_books(filename="books.json", count=500, seed=None):
+def generate_books_json(filename="books.json", count=500, seed=None):
     rng = np.random.default_rng(seed)
     random.seed(seed)
 
@@ -136,6 +136,5 @@ def generate_books(filename="books.json", count=500, seed=None):
             )
         )
 
-    #with open(filename, "w", encoding="utf-8") as f:
-    #    json.dump(books, f, indent=2)
-    return books
+    with open(filename, "w", encoding="utf-8") as f:
+        json.dump(books, f, indent=2)
