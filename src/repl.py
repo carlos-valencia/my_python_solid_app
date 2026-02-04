@@ -103,6 +103,8 @@ class BookREPL:
 
         new_title = input("Enter new book title: ")
         new_author = input("Enter new author: ")
+        new_pub_year = input("Enter new publication year: ")
+        new_page_count = input("Enter new page count: ")
 
         if new_title:
             updates["title"] = new_title
@@ -110,9 +112,24 @@ class BookREPL:
         if new_author:
             updates["author"] = new_author
 
+        if new_pub_year:
+            updates["publication_year"] = new_pub_year
+
+        if new_page_count:
+            updates["page_count"] = new_page_count
+
         print("Book was successfully updated"
               if self.book_service.update_book(book_choice, updates)
               else "Something went wrong, book was not updated")
+
+    def get_int(self, query: str) -> int:
+        while True:
+            try:
+                int_input = int(input(query))
+                return int_input
+            except TypeError as e:
+                print(e)
+
 
     def get_book_choice(self, query: str) -> Book:
         books = self.book_service.find_book_by_name(query)
