@@ -103,8 +103,8 @@ class BookREPL:
 
         new_title = input("Enter new book title: ")
         new_author = input("Enter new author: ")
-        new_pub_year = input("Enter new publication year: ")
-        new_page_count = input("Enter new page count: ")
+        new_pub_year = self.get_int("Enter new publication year: ")
+        new_page_count = self.get_int("Enter new page count: ")
 
         if new_title:
             updates["title"] = new_title
@@ -118,9 +118,10 @@ class BookREPL:
         if new_page_count:
             updates["page_count"] = new_page_count
 
-        print("Book was successfully updated"
-              if self.book_service.update_book(book_choice, updates)
-              else "Something went wrong, book was not updated")
+        update_result = self.book_service.update_book(book_choice, updates)
+
+        for status, field_list in update_result.items():
+            print(f"{status}: {field}" for field in field_list)
 
     def get_int(self, query: str) -> int:
         while True:

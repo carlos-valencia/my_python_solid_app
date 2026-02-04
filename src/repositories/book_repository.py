@@ -36,7 +36,11 @@ class BookRepository(BookRepositoryProtocol):
 
         return True
 
-    def update_book(self, book: Book, updates: dict[str: int]) -> bool:
+    def update_book(self, book: Book, updates: dict[str: int]) -> dict[str: list[str]]:
+        result = {
+            "updated": [],
+            "invalid": []
+        }
         books = self.get_all_books()
         for field, value in updates.items():
             setattr(book, field, value)

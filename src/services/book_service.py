@@ -19,5 +19,5 @@ class BookService:
     def remove_book(self, book: Book) -> bool:
         return self.repo.remove_book(book)
 
-    def update_book(self, book: Book, updates: dict[str: int]) -> bool:
+    def update_book(self, book: Book, updates: dict[str: int]) -> dict[str: list[str]]:
         return self.repo.update_book(book, updates)
