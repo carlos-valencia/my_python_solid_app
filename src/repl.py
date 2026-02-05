@@ -97,9 +97,23 @@ class BookREPL:
 
     def update_book(self):
         query = input("Please enter book name: ")
-        book_choice = self.get_book_choice(query)
-        
+        books = self.book_service.find_book_by_name(query)
+
+        if not books:
+            print(f"No books found with the title {query}")
+            return
+
+        book_choice: Book
+        if len(books) == 1:
+            book_choice = books[0]
+        else:
+            book_choice = self.get_book_choice(books)
+
+
         updates = {}
+        update_result = {
+            "skipped": []
+        }
 
         new_title = input("Enter new book title: ")
         new_author = input("Enter new author: ")
@@ -108,70 +122,81 @@ class BookREPL:
 
         if new_title:
             updates["title"] = new_title
+        else:
+            update_result["skipped"].append("title")
 
         if new_author:
             updates["author"] = new_author
+        else:
+            update_result["skipped"].append("author")
 
         if new_pub_year:
             updates["publication_year"] = new_pub_year
+        else:
+            update_result["skipped"].append("publication year")
 
         if new_page_count:
             updates["page_count"] = new_page_count
+        else:
+            update_result["skipped"].append("page count")
 
-        update_result = self.book_service.update_book(book_choice, updates)
+        update_result.update(
+            self.book_service.update_book(book_choice, updates))
 
-        for status, field_list in update_result.items():
-            print(f"{status}: {field}" for field in field_list)
+        if not update_result or "updated" not in update_result:
+            print("An error occurred. Update not applied")
+        else:
+            for status, field_list in update_result.items():
+                if field_list:
+                    print(f"{status}: {", ".join(field_list)}")
+                else:
+                    print(f"{status}: none")
 
     def get_int(self, query: str) -> int:
         while True:
+            str_input = input(query)
+            if not str_input.strip():
+                return None
+
             try:
-                int_input = int(input(query))
-                return int_input
-            except TypeError as e:
-                print(e)
+                return int(str_input)
+            except ValueError:
+                print("Please enter a valid whole number")
 
 
-    def get_book_choice(self, query: str) -> Book:
-        books = self.book_service.find_book_by_name(query)
-
-        # list is empty - no such books of that title
-        if not books:
-            print(f"No books found with the title {query}")
-            return None
-
-        # more than one found, give user chance to choose one (by index)
-        if len(books) > 1:
-            print("Multiple entries found with that name, select one")
-            print(*(f"[{i}] {book.title} - {book.author}"
-                    for i, book in enumerate(books, start=1)), sep="\n")
-            choice = self.get_choice_int(len(books), True)
-            return books[choice]
-
-        # only one in list, returns index 0
-        return books[0]
+    def get_book_choice(self, books: list[Book]) -> Book:
+        print("Multiple entries found with that name, select one")
+        print(*(f"[{i}] {book}"
+                for i, book in enumerate(books, start=1)), sep="\n")
+        choice = self.get_choice_int(len(books))
+        return books[choice]
 
     def remove_book(self):
         query = input("Please enter book name: ")
-        book_choice = self.get_book_choice(query)
+        books = self.book_service.find_book_by_name(query)
 
-        if book_choice:
-            print(f"{book_choice.title} has been removed"
-                  if self.book_service.remove_book(book_choice)
-                  else "An unexpected error has occurred")
+        if not books:
+            print(f"No books were found with the title: {query}")
+            return
 
-    def get_choice_int(self, length: int, adjust: bool) -> int:
+        book_choice: Book
+        if len(books) == 1:
+            book_choice = books[0]
+        else:
+            book_choice = self.get_book_choice(books)
+
+        print(f"{book_choice} has been removed"
+                if self.book_service.remove_book(book_choice)
+                else "An unexpected error has occurred")
+
+    def get_choice_int(self, length: int) -> int:
         while True:
             try:
-                choice = int(input("Enter selection: "))
-                if choice - 1 < 0 or choice - 1 >= length:
+                choice = int(input("Enter selection: ").strip())
+                if not 1 <= choice <= length:
                     raise IndexError("Index out of bounds.")
-                
-                # adjust == True: we adjust the value for list index
-                # adjust == False: we return as is
-                return choice - 1 if adjust else choice
-            except TypeError:
-                print("Something went wrong, please try again.")
+
+                return choice - 1
             except ValueError:
                 print("Invalid input. Please enter a valid number.")
             except IndexError as ie:

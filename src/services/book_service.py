@@ -20,4 +20,26 @@ class BookService:
         return self.repo.remove_book(book)
 
     def update_book(self, book: Book, updates: dict[str: int]) -> dict[str: list[str]]:
-        return self.repo.update_book(book, updates)
+
+        result = {
+            "updated": [],
+            "invalid": []
+        }
+
+        for field, value in updates.items():
+            # if value is an int, we need to validate
+            if isinstance(value, int):
+                # if value is int, we want it to be positive at least
+                if(value < 0):
+                    result["invalid"].append(field)
+                    updates.pop(field)
+                else:
+                    result["updated"].append(field)
+            # if not an int, it's a str, we take as is
+            else:
+                result["updated"].append(field)
+
+        if self.repo.update_book(book, updates):
+            return result
+        else:
+            return {}

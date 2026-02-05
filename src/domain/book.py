@@ -59,6 +59,10 @@ class Book:
         return self.__str__()
     
     def __str__(self):
+        return f"{self.title} - {self.author}"
+
+
+    def display(self):
 
         status = (
             "Not Available"
